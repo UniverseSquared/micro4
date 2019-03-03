@@ -1,4 +1,6 @@
-OBJS = src/main.o
+OBJS = \
+	src/micro.o \
+	src/main.o
 BIN = micro4
 CFLAGS = -lSDL2
 
