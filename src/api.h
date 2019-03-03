@@ -8,7 +8,9 @@
 micro_t *micro_get_state(lua_State *lua);
 
 int micro_clr(lua_State *lua);
+int micro_rect(lua_State *lua);
 int micro_btn(lua_State *lua);
+int micro_btnp(lua_State *lua);
 
 void micro_load_api(micro_t *micro);
 
