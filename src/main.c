@@ -1,7 +1,12 @@
 #include "micro.h"
 
 int main(int argc, char *argv[]) {
-    micro_t *micro = micro_init();
+    if(argc < 2) {
+        fprintf(stderr, "Usage: %s <cart>\n", argv[0]);
+        return 1;
+    }
+
+    micro_t *micro = micro_init(argv[1]);
     if(!micro) {
         return 1;
     }

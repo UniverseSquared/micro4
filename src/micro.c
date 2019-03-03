@@ -1,6 +1,6 @@
 #include "micro.h"
 
-micro_t *micro_init() {
+micro_t *micro_init(const char *cart) {
     micro_t *micro = (micro_t*)malloc(sizeof(micro_t));
 
     if(SDL_Init(SDL_INIT_VIDEO) != 0) {
@@ -25,6 +25,12 @@ micro_t *micro_init() {
         return NULL;
     }
 
+    micro->lua = luaL_newstate();
+
+    if(micro_load_cart(micro, cart) != 0) {
+        return NULL;
+    }
+
     micro->running = 1;
 
     return micro;
@@ -34,7 +40,36 @@ void micro_free(micro_t *micro) {
     SDL_DestroyRenderer(micro->renderer);
     SDL_DestroyWindow(micro->window);
     SDL_Quit();
+    lua_close(micro->lua);
     free(micro);
+}
+
+int micro_load_cart(micro_t *micro, const char *cart) {
+    if(luaL_loadfile(micro->lua, cart) != 0) {
+        fprintf(stderr, "Failed to load cart!\n");
+        return 1;
+    }
+
+    int ret;
+    if((ret = lua_pcall(micro->lua, 0, 0, 0)) != 0) {
+        if(ret == LUA_ERRRUN) {
+            fprintf(stderr, "Failed to load cart:\n%s\n",
+                    lua_tostring(micro->lua, -1));
+            return 1;
+        }
+    }
+
+    lua_getglobal(micro->lua, "init");
+    if(lua_isfunction(micro->lua, -1)) {
+        if((ret = lua_pcall(micro->lua, 0, 0, 0)) != 0) {
+            if(ret == LUA_ERRRUN) {
+                fprintf(stderr, "%s\n", lua_tostring(micro->lua, -1));
+                return 1;
+            }
+        }
+    }
+
+    return 0;
 }
 
 void micro_run(micro_t *micro) {
