@@ -46,6 +46,9 @@ micro_t *micro_init(const char *cart) {
 
     micro->running = 1;
 
+    lua_pushlightuserdata(micro->lua, micro);
+    lua_setglobal(micro->lua, "_MICRO4");
+
     return micro;
 }
 
@@ -108,8 +111,6 @@ void micro_run(micro_t *micro) {
         }
 
         SDL_SetRenderTarget(micro->renderer, micro->scene);
-        SDL_SetRenderDrawColor(micro->renderer, 0, 0, 0, 255);
-        SDL_RenderClear(micro->renderer);
 
         lua_getglobal(micro->lua, "draw");
         if(lua_isfunction(micro->lua, -1)) {

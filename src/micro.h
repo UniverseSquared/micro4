@@ -9,6 +9,14 @@
 #define WINDOW_SCALE 2
 #define WINDOW_SIZE  SCREEN_SIZE * WINDOW_SCALE
 
+const static int micro_palette[][3] = {
+    { 255, 0, 0 },
+    { 0, 255, 0 },
+    { 0, 0, 255 }
+};
+
+#define PALETTE_SIZE (sizeof(micro_palette) / sizeof(micro_palette[0]))
+
 typedef struct micro {
     SDL_Window *window;
     SDL_Renderer *renderer;
