@@ -26,6 +26,16 @@ micro_t *micro_init(const char *cart) {
         return NULL;
     }
 
+    micro->scene = SDL_CreateTexture(micro->renderer, SDL_PIXELFORMAT_RGBA8888,
+                                     SDL_TEXTUREACCESS_TARGET, SCREEN_SIZE, SCREEN_SIZE);
+    if(!micro->scene) {
+        fprintf(stderr, "Failed to create scene texture: %s\n", SDL_GetError());
+        SDL_DestroyRenderer(micro->renderer);
+        SDL_DestroyWindow(micro->window);
+        SDL_Quit();
+        return NULL;
+    }
+
     micro->lua = luaL_newstate();
 
     micro_load_api(micro);
@@ -87,9 +97,6 @@ void micro_run(micro_t *micro) {
             }
         }
 
-        SDL_SetRenderDrawColor(micro->renderer, 0, 0, 0, 255);
-        SDL_RenderClear(micro->renderer);
-
         lua_getglobal(micro->lua, "update");
         if(lua_isfunction(micro->lua, -1)) {
             if((ret = lua_pcall(micro->lua, 0, 0, 0)) != 0) {
@@ -100,6 +107,10 @@ void micro_run(micro_t *micro) {
             }
         }
 
+        SDL_SetRenderTarget(micro->renderer, micro->scene);
+        SDL_SetRenderDrawColor(micro->renderer, 0, 0, 0, 255);
+        SDL_RenderClear(micro->renderer);
+
         lua_getglobal(micro->lua, "draw");
         if(lua_isfunction(micro->lua, -1)) {
             if((ret = lua_pcall(micro->lua, 0, 0, 0)) != 0) {
@@ -109,6 +120,9 @@ void micro_run(micro_t *micro) {
                 }
             }
         }
+
+        SDL_SetRenderTarget(micro->renderer, NULL);
+        SDL_RenderCopy(micro->renderer, micro->scene, NULL, NULL);
 
         SDL_RenderPresent(micro->renderer);
     }

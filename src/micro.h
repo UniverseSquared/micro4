@@ -12,6 +12,7 @@
 typedef struct micro {
     SDL_Window *window;
     SDL_Renderer *renderer;
+    SDL_Texture *scene;
     lua_State *lua;
     int running;
 } micro_t;
