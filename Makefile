@@ -3,7 +3,7 @@ OBJS = \
 	src/micro.o \
 	src/main.o
 BIN = micro4
-CFLAGS = -lSDL2 -llua
+CFLAGS = -lSDL2 -lSDL2_gfx -llua
 
 .PHONY: all clean
 

@@ -39,6 +39,53 @@ int micro_rect(lua_State *lua) {
     return 0;
 }
 
+int micro_rectline(lua_State *lua) {
+    micro_t *micro = micro_get_state(lua);
+
+    int x = luaL_checknumber(lua, 1);
+    int y = luaL_checknumber(lua, 2);
+    int w = luaL_checknumber(lua, 3);
+    int h = luaL_checknumber(lua, 4);
+    SDL_Rect rect = { .x = x, .y = y, .w = w, .h = h };
+
+    int color = luaL_checknumber(lua, 5);
+    if(color >= PALETTE_SIZE) {
+        lua_pushstring(lua, "Invalid palette index.");
+        lua_error(lua);
+    }
+
+    int r = micro_palette[color][0];
+    int g = micro_palette[color][1];
+    int b = micro_palette[color][2];
+
+    SDL_SetRenderDrawColor(micro->renderer, r, g, b, 255);
+    SDL_RenderDrawRect(micro->renderer, &rect);
+
+    return 0;
+}
+
+int micro_circle(lua_State *lua) {
+    micro_t *micro = micro_get_state(lua);
+
+    int x = luaL_checknumber(lua, 1);
+    int y = luaL_checknumber(lua, 2);
+    int radius = luaL_checknumber(lua, 3);
+
+    int color = luaL_checknumber(lua, 4);
+    if(color >= PALETTE_SIZE) {
+        lua_pushstring(lua, "Invalid palette index.");
+        lua_error(lua);
+    }
+
+    int r = micro_palette[color][0];
+    int g = micro_palette[color][1];
+    int b = micro_palette[color][2];
+
+    filledCircleRGBA(micro->renderer, x, y, radius, r, g, b, 255);
+
+    return 0;
+}
+
 int micro_btn(lua_State *lua) {
     micro_t *micro = micro_get_state(lua);
 
@@ -65,6 +112,12 @@ void micro_load_api(micro_t *micro) {
 
     lua_pushcfunction(micro->lua, micro_rect);
     lua_setglobal(micro->lua, "rect");
+
+    lua_pushcfunction(micro->lua, micro_rectline);
+    lua_setglobal(micro->lua, "rectline");
+
+    lua_pushcfunction(micro->lua, micro_circle);
+    lua_setglobal(micro->lua, "circle");
 
     lua_pushcfunction(micro->lua, micro_btn);
     lua_setglobal(micro->lua, "btn");
