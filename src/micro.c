@@ -1,4 +1,5 @@
 #include "micro.h"
+#include "api.h"
 
 micro_t *micro_init(const char *cart) {
     micro_t *micro = (micro_t*)malloc(sizeof(micro_t));
@@ -26,6 +27,8 @@ micro_t *micro_init(const char *cart) {
     }
 
     micro->lua = luaL_newstate();
+
+    micro_load_api(micro);
 
     if(micro_load_cart(micro, cart) != 0) {
         return NULL;
@@ -73,6 +76,7 @@ int micro_load_cart(micro_t *micro, const char *cart) {
 }
 
 void micro_run(micro_t *micro) {
+    int ret;
     while(micro->running) {
         SDL_Event e;
         while(SDL_PollEvent(&e)) {
@@ -85,6 +89,26 @@ void micro_run(micro_t *micro) {
 
         SDL_SetRenderDrawColor(micro->renderer, 0, 0, 0, 255);
         SDL_RenderClear(micro->renderer);
+
+        lua_getglobal(micro->lua, "update");
+        if(lua_isfunction(micro->lua, -1)) {
+            if((ret = lua_pcall(micro->lua, 0, 0, 0)) != 0) {
+                if(ret == LUA_ERRRUN) {
+                    fprintf(stderr, "%s\n", lua_tostring(micro->lua, -1));
+                    micro->running = 0;
+                }
+            }
+        }
+
+        lua_getglobal(micro->lua, "draw");
+        if(lua_isfunction(micro->lua, -1)) {
+            if((ret = lua_pcall(micro->lua, 0, 0, 0)) != 0) {
+                if(ret == LUA_ERRRUN) {
+                    fprintf(stderr, "%s\n", lua_tostring(micro->lua, -1));
+                    micro->running = 0;
+                }
+            }
+        }
 
         SDL_RenderPresent(micro->renderer);
     }

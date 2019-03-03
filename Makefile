@@ -1,4 +1,5 @@
 OBJS = \
+	src/api.o \
 	src/micro.o \
 	src/main.o
 BIN = micro4
