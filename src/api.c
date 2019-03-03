@@ -39,6 +39,15 @@ int micro_rect(lua_State *lua) {
     return 0;
 }
 
+int micro_btn(lua_State *lua) {
+    micro_t *micro = micro_get_state(lua);
+
+    int button = luaL_checknumber(lua, 1);
+    lua_pushboolean(lua, micro->button_state[button]);
+
+    return 1;
+}
+
 void micro_load_api(micro_t *micro) {
     luaL_openlibs(micro->lua);
 
@@ -47,4 +56,7 @@ void micro_load_api(micro_t *micro) {
 
     lua_pushcfunction(micro->lua, micro_rect);
     lua_setglobal(micro->lua, "rect");
+
+    lua_pushcfunction(micro->lua, micro_btn);
+    lua_setglobal(micro->lua, "btn");
 }

@@ -1,6 +1,14 @@
 #include "micro.h"
 #include "api.h"
 
+int micro_resolve_key(SDL_Keycode key) {
+    for(int i = 0; i < BUTTON_COUNT; i++)
+        if(micro_button_map[i] == key)
+            return i;
+
+    return -1;
+}
+
 micro_t *micro_init(const char *cart) {
     micro_t *micro = (micro_t*)malloc(sizeof(micro_t));
 
@@ -42,6 +50,11 @@ micro_t *micro_init(const char *cart) {
 
     if(micro_load_cart(micro, cart) != 0) {
         return NULL;
+    }
+
+    for(int i = 0; i < BUTTON_COUNT; i++) {
+        micro->button_state[i] = 0;
+        micro->old_button_state[i] = 0;
     }
 
     micro->running = 1;
@@ -97,6 +110,14 @@ void micro_run(micro_t *micro) {
             case SDL_QUIT:
                 micro->running = 0;
                 break;
+            case SDL_KEYDOWN:
+            case SDL_KEYUP: {
+                int button = micro_resolve_key(e.key.keysym.sym);
+                if(button != -1) {
+                    micro->button_state[button] = e.type == SDL_KEYDOWN;
+                }
+                break;
+            }
             }
         }
 
@@ -126,5 +147,8 @@ void micro_run(micro_t *micro) {
         SDL_RenderCopy(micro->renderer, micro->scene, NULL, NULL);
 
         SDL_RenderPresent(micro->renderer);
+
+        for(int i = 0; i < BUTTON_COUNT; i++)
+            micro->old_button_state[i] = micro->button_state[i];
     }
 }

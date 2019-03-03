@@ -17,13 +17,28 @@ const static int micro_palette[][3] = {
 
 #define PALETTE_SIZE (sizeof(micro_palette) / sizeof(micro_palette[0]))
 
+const static int micro_button_map[] = {
+    [0] = SDLK_z,
+    [1] = SDLK_x,
+    [2] = SDLK_UP,
+    [3] = SDLK_DOWN,
+    [4] = SDLK_LEFT,
+    [5] = SDLK_RIGHT
+};
+
+#define BUTTON_COUNT (sizeof(micro_button_map) / sizeof(micro_button_map[0]))
+
 typedef struct micro {
     SDL_Window *window;
     SDL_Renderer *renderer;
     SDL_Texture *scene;
     lua_State *lua;
+    int button_state[BUTTON_COUNT];
+    int old_button_state[BUTTON_COUNT];
     int running;
 } micro_t;
+
+int micro_resolve_key(SDL_Keycode key);
 
 micro_t *micro_init(const char *cart);
 void micro_free(micro_t *micro);
