@@ -6,7 +6,7 @@
 #include "lauxlib.h"
 
 #define SCREEN_SIZE  128
-#define WINDOW_SCALE 2
+#define WINDOW_SCALE 4
 #define WINDOW_SIZE  SCREEN_SIZE * WINDOW_SCALE
 
 #define TARGET_FPS 60
