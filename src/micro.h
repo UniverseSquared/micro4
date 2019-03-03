@@ -9,6 +9,9 @@
 #define WINDOW_SCALE 2
 #define WINDOW_SIZE  SCREEN_SIZE * WINDOW_SCALE
 
+#define TARGET_FPS 60
+#define FRAME_TIME (1000 / TARGET_FPS)
+
 const static int micro_palette[][3] = {
     { 255, 0, 0 },
     { 0, 255, 0 },
@@ -36,6 +39,7 @@ typedef struct micro {
     int button_state[BUTTON_COUNT];
     int old_button_state[BUTTON_COUNT];
     int running;
+    int start_time, end_time, delta, fps;
 } micro_t;
 
 int micro_resolve_key(SDL_Keycode key);

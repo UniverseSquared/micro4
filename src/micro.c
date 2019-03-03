@@ -59,6 +59,11 @@ micro_t *micro_init(const char *cart) {
 
     micro->running = 1;
 
+    micro->start_time = 0;
+    micro->end_time = 0;
+    micro->delta = 0;
+    micro->fps = 60;
+
     lua_pushlightuserdata(micro->lua, micro);
     lua_setglobal(micro->lua, "_MICRO4");
 
@@ -102,8 +107,19 @@ int micro_load_cart(micro_t *micro, const char *cart) {
 }
 
 void micro_run(micro_t *micro) {
+    micro->start_time = SDL_GetTicks();
     int ret;
     while(micro->running) {
+        micro->delta = micro->end_time - micro->start_time;
+
+        if(micro->delta < FRAME_TIME) {
+            SDL_Delay(FRAME_TIME - micro->delta);
+        }
+
+        if(micro->delta > FRAME_TIME) {
+            micro->fps = 1000 / micro->delta;
+        }
+
         SDL_Event e;
         while(SDL_PollEvent(&e)) {
             switch(e.type) {
@@ -150,5 +166,8 @@ void micro_run(micro_t *micro) {
 
         for(int i = 0; i < BUTTON_COUNT; i++)
             micro->old_button_state[i] = micro->button_state[i];
+
+        micro->start_time = micro->end_time;
+        micro->end_time = SDL_GetTicks();
     }
 }
