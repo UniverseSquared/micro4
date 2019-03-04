@@ -5,18 +5,22 @@ micro_t *micro_get_state(lua_State *lua) {
     return (micro_t*)lua_touserdata(lua, -1);
 }
 
-int micro_clr(lua_State *lua) {
-    micro_t *micro = micro_get_state(lua);
-
-    int color = luaL_checknumber(lua, 1);
+void micro_get_color(lua_State *lua, int color, int *r, int *g, int *b) {
     if(color >= PALETTE_SIZE) {
         lua_pushstring(lua, "Invalid palette index.");
         lua_error(lua);
     }
 
-    int r = micro_palette[color][0];
-    int g = micro_palette[color][1];
-    int b = micro_palette[color][2];
+    *r = micro_palette[color][0];
+    *g = micro_palette[color][1];
+    *b = micro_palette[color][2];
+}
+
+int micro_clr(lua_State *lua) {
+    micro_t *micro = micro_get_state(lua);
+
+    int r, g, b, color = luaL_checknumber(lua, 1);
+    micro_get_color(lua, color, &r, &g, &b);
 
     SDL_SetRenderDrawColor(micro->renderer, r, g, b, 255);
     SDL_RenderClear(micro->renderer);
@@ -33,15 +37,8 @@ int micro_rect(lua_State *lua) {
     int h = luaL_checknumber(lua, 4);
     SDL_Rect rect = { .x = x, .y = y, .w = w, .h = h };
 
-    int color = luaL_checknumber(lua, 5);
-    if(color >= PALETTE_SIZE) {
-        lua_pushstring(lua, "Invalid palette index.");
-        lua_error(lua);
-    }
-
-    int r = micro_palette[color][0];
-    int g = micro_palette[color][1];
-    int b = micro_palette[color][2];
+    int r, g, b, color = luaL_checknumber(lua, 5);
+    micro_get_color(lua, color, &r, &g, &b);
 
     SDL_SetRenderDrawColor(micro->renderer, r, g, b, 255);
     SDL_RenderFillRect(micro->renderer, &rect);
@@ -58,15 +55,8 @@ int micro_rectline(lua_State *lua) {
     int h = luaL_checknumber(lua, 4);
     SDL_Rect rect = { .x = x, .y = y, .w = w, .h = h };
 
-    int color = luaL_checknumber(lua, 5);
-    if(color >= PALETTE_SIZE) {
-        lua_pushstring(lua, "Invalid palette index.");
-        lua_error(lua);
-    }
-
-    int r = micro_palette[color][0];
-    int g = micro_palette[color][1];
-    int b = micro_palette[color][2];
+    int r, g, b, color = luaL_checknumber(lua, 5);
+    micro_get_color(lua, color, &r, &g, &b);
 
     SDL_SetRenderDrawColor(micro->renderer, r, g, b, 255);
     SDL_RenderDrawRect(micro->renderer, &rect);
@@ -81,15 +71,8 @@ int micro_circle(lua_State *lua) {
     int y = luaL_checknumber(lua, 2);
     int radius = luaL_checknumber(lua, 3);
 
-    int color = luaL_checknumber(lua, 4);
-    if(color >= PALETTE_SIZE) {
-        lua_pushstring(lua, "Invalid palette index.");
-        lua_error(lua);
-    }
-
-    int r = micro_palette[color][0];
-    int g = micro_palette[color][1];
-    int b = micro_palette[color][2];
+    int r, g, b, color = luaL_checknumber(lua, 4);
+    micro_get_color(lua, color, &r, &g, &b);
 
     filledCircleRGBA(micro->renderer, x, y, radius, r, g, b, 255);
 
@@ -103,15 +86,8 @@ int micro_circleline(lua_State *lua) {
     int y = luaL_checknumber(lua, 2);
     int radius = luaL_checknumber(lua, 3);
 
-    int color = luaL_checknumber(lua, 4);
-    if(color >= PALETTE_SIZE) {
-        lua_pushstring(lua, "Invalid palette index.");
-        lua_error(lua);
-    }
-
-    int r = micro_palette[color][0];
-    int g = micro_palette[color][1];
-    int b = micro_palette[color][2];
+    int r, g, b, color = luaL_checknumber(lua, 4);
+    micro_get_color(lua, color, &r, &g, &b);
 
     circleRGBA(micro->renderer, x, y, radius, r, g, b, 255);
 
