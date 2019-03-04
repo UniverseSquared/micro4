@@ -9,7 +9,7 @@ int micro_resolve_key(SDL_Keycode key) {
     return -1;
 }
 
-micro_t *micro_init(const char *cart) {
+micro_t *micro_init(const char *cart_path) {
     micro_t *micro = (micro_t*)malloc(sizeof(micro_t));
 
     if(SDL_Init(SDL_INIT_VIDEO) != 0) {
@@ -48,9 +48,12 @@ micro_t *micro_init(const char *cart) {
 
     micro_load_api(micro);
 
-    if(micro_load_cart(micro, cart) != 0) {
+    FILE *cart_file = fopen(cart_path, "r");
+    if(micro_load_cart(micro, cart_file) != 0) {
         return NULL;
     }
+
+    fclose(cart_file);
 
     for(int i = 0; i < BUTTON_COUNT; i++) {
         micro->button_state[i] = 0;
@@ -78,13 +81,19 @@ void micro_free(micro_t *micro) {
     free(micro);
 }
 
-int micro_load_cart(micro_t *micro, const char *cart) {
-    if(luaL_loadfile(micro->lua, cart) != 0) {
-        fprintf(stderr, "Failed to load cart!\n");
-        return 1;
-    }
+int micro_load_cart(micro_t *micro, FILE *cart_file) {
+    micro->cart = cart_parse(cart_file);
 
     int ret;
+    if((ret = luaL_loadstring(micro->lua, micro->cart->code_data)) != 0) {
+        if(ret == LUA_ERRSYNTAX) {
+            fprintf(stderr, "Failed to load cart:\n%s\n",
+                    lua_tostring(micro->lua, -1));
+            return 1;
+        }
+
+    }
+
     if((ret = lua_pcall(micro->lua, 0, 0, 0)) != 0) {
         if(ret == LUA_ERRRUN) {
             fprintf(stderr, "Failed to load cart:\n%s\n",

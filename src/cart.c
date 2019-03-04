@@ -29,8 +29,6 @@ cart_t *cart_parse(FILE *file) {
 
     cart->code_data = cart_parse_section(file, &cart->code_size);
 
-    printf("%s\n", cart->code_data);
-
     return cart;
 }
 

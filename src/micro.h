@@ -1,9 +1,11 @@
 #ifndef _MICRO_H_
 #define _MICRO_H_
 #include <stdlib.h>
+#include <stdio.h>
 #include <SDL2/SDL.h>
 #include "lua.h"
 #include "lauxlib.h"
+#include "cart.h"
 
 #define SCREEN_SIZE  128
 #define WINDOW_SCALE 4
@@ -36,6 +38,7 @@ typedef struct micro {
     SDL_Renderer *renderer;
     SDL_Texture *scene;
     lua_State *lua;
+    cart_t *cart;
     int button_state[BUTTON_COUNT];
     int old_button_state[BUTTON_COUNT];
     int running;
@@ -44,9 +47,9 @@ typedef struct micro {
 
 int micro_resolve_key(SDL_Keycode key);
 
-micro_t *micro_init(const char *cart);
+micro_t *micro_init(const char *cart_path);
 void micro_free(micro_t *micro);
-int micro_load_cart(micro_t *micro, const char *cart);
+int micro_load_cart(micro_t *micro, FILE *cart_file);
 void micro_run(micro_t *micro);
 
 #endif
