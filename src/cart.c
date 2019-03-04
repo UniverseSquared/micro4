@@ -1,5 +1,22 @@
 #include "cart.h"
 
+char *cart_parse_section(FILE *file, int *size) {
+    fseek(file, 1, SEEK_CUR);
+
+    char length_bytes[2];
+    fread(length_bytes, 1, 2, file);
+
+    int length = (length_bytes[0] << 4) | length_bytes[1];
+    char *buffer = (char*)malloc(length);
+
+    fread(buffer, 1, length, file);
+
+    if(size)
+        *size = length;
+
+    return buffer;
+}
+
 cart_t *cart_parse(FILE *file) {
     cart_t *cart = (cart_t*)malloc(sizeof(cart_t));
 
@@ -10,18 +27,7 @@ cart_t *cart_parse(FILE *file) {
         return NULL;
     }
 
-    /* TODO: Move section parser to it's own function. (cart_parse_section) */
-    fseek(file, 1, SEEK_CUR);
-
-    char code_length_bytes[2];
-    fread(code_length_bytes, 1, 2, file);
-
-    int code_length = (code_length_bytes[0] << 4) | code_length_bytes[1];
-    printf("code is %0x bytes long\n", code_length);
-
-    cart->code_size = code_length;
-    cart->code_data = (char*)malloc(code_length);
-    fread(cart->code_data, 1, code_length, file);
+    cart->code_data = cart_parse_section(file, &cart->code_size);
 
     printf("%s\n", cart->code_data);
 
