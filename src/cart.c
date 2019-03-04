@@ -32,9 +32,6 @@ cart_t *cart_parse(FILE *file) {
     return cart;
 }
 
-char *cart_get_section(cart_t *cart, const char *section) {
-}
-
 void cart_free(cart_t *cart) {
     free(cart->code_data);
     free(cart);

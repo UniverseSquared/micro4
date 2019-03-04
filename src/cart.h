@@ -13,7 +13,6 @@ typedef struct cart {
 
 char *cart_parse_section(FILE *file, int *size);
 cart_t *cart_parse(FILE *file);
-char *cart_get_section(cart_t *cart, const char *section);
 void cart_free(cart_t *cart);
 
 #endif
