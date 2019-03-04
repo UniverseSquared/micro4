@@ -16,6 +16,7 @@ These functions can be used in a micro4 cart.
 * `rect(x,y,w,h,c)` - Draw a rectangle with the specified x, y, width, height and color.
 * `rectline(x,y,w,h,c)` - Same as `rect`, except only draws an outline.
 * `circle(x,y,radius,c)` - Draw a circle with the specified x, y, radius and color.
+* `circleline(x,y,radius,c)` - Same as `circle`, except only draws an outline.
 * `btn(n)` - Returns true if the specified button is pressed, false otherwise.
 * `btnp(n)` - Returns true if the specified button is pressed and wasn't in the last frame, false otherwise.
 
