@@ -107,6 +107,7 @@ int micro_btnp(lua_State *lua) {
 void micro_load_api(micro_t *micro) {
     luaL_openlibs(micro->lua);
 
+    /* Load the functions into the lua environment. */
     lua_pushcfunction(micro->lua, micro_clr);
     lua_setglobal(micro->lua, "clr");
 

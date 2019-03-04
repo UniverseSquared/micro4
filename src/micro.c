@@ -46,8 +46,10 @@ micro_t *micro_init(const char *cart_path) {
 
     micro->lua = luaL_newstate();
 
+    /* Load micro4's lua functions into the environment. */
     micro_load_api(micro);
 
+    /* Load the cart from the path provided. */
     FILE *cart_file = fopen(cart_path, "r");
     if(micro_load_cart(micro, cart_file) != 0) {
         return NULL;
@@ -55,6 +57,7 @@ micro_t *micro_init(const char *cart_path) {
 
     fclose(cart_file);
 
+    /* Initialize button states to 0. */
     for(int i = 0; i < BUTTON_COUNT; i++) {
         micro->button_state[i] = 0;
         micro->old_button_state[i] = 0;
@@ -67,6 +70,8 @@ micro_t *micro_init(const char *cart_path) {
     micro->delta = 0;
     micro->fps = 60;
 
+    /* Put the address of the micro struct into a variable.
+     * This is so that it can be accessed from the lua API functions. */
     lua_pushlightuserdata(micro->lua, micro);
     lua_setglobal(micro->lua, "_MICRO4");
 
@@ -84,6 +89,7 @@ void micro_free(micro_t *micro) {
 int micro_load_cart(micro_t *micro, FILE *cart_file) {
     micro->cart = cart_parse(cart_file);
 
+    /* Load the cart's code into a function. */
     int ret;
     if((ret = luaL_loadstring(micro->lua, micro->cart->code_data)) != 0) {
         if(ret == LUA_ERRSYNTAX) {
@@ -94,6 +100,7 @@ int micro_load_cart(micro_t *micro, FILE *cart_file) {
 
     }
 
+    /* Call the loaded function. */
     if((ret = lua_pcall(micro->lua, 0, 0, 0)) != 0) {
         if(ret == LUA_ERRRUN) {
             fprintf(stderr, "Failed to load cart:\n%s\n",
@@ -102,6 +109,7 @@ int micro_load_cart(micro_t *micro, FILE *cart_file) {
         }
     }
 
+    /* Invoke the init function, if present. */
     lua_getglobal(micro->lua, "init");
     if(lua_isfunction(micro->lua, -1)) {
         if((ret = lua_pcall(micro->lua, 0, 0, 0)) != 0) {
@@ -146,6 +154,7 @@ void micro_run(micro_t *micro) {
             }
         }
 
+        /* Invoke the update function, if present. */
         lua_getglobal(micro->lua, "update");
         if(lua_isfunction(micro->lua, -1)) {
             if((ret = lua_pcall(micro->lua, 0, 0, 0)) != 0) {
@@ -158,6 +167,7 @@ void micro_run(micro_t *micro) {
 
         SDL_SetRenderTarget(micro->renderer, micro->scene);
 
+        /* Invoke the draw function, if present. */
         lua_getglobal(micro->lua, "draw");
         if(lua_isfunction(micro->lua, -1)) {
             if((ret = lua_pcall(micro->lua, 0, 0, 0)) != 0) {
@@ -173,6 +183,7 @@ void micro_run(micro_t *micro) {
 
         SDL_RenderPresent(micro->renderer);
 
+        /* Update the old button state. */
         for(int i = 0; i < BUTTON_COUNT; i++)
             micro->old_button_state[i] = micro->button_state[i];
 
