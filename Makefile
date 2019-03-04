@@ -1,4 +1,5 @@
 OBJS = \
+	src/cart.o \
 	src/api.o \
 	src/micro.o \
 	src/main.o
