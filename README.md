@@ -12,7 +12,7 @@ micro4 is a work-in-progress fantasy console developed by @UniverseSquared.
 
 These functions can be used in a micro4 cart.
 
-* `clr()` - Clear the screen with black.
+* `clr(c)` - Clear the screen with the specified color.
 * `rect(x,y,w,h,c)` - Draw a rectangle with the specified x, y, width, height and color.
 * `rectline(x,y,w,h,c)` - Same as `rect`, except only draws an outline.
 * `circle(x,y,radius,c)` - Draw a circle with the specified x, y, radius and color.

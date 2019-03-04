@@ -8,7 +8,17 @@ micro_t *micro_get_state(lua_State *lua) {
 int micro_clr(lua_State *lua) {
     micro_t *micro = micro_get_state(lua);
 
-    SDL_SetRenderDrawColor(micro->renderer, 0, 0, 0, 255);
+    int color = luaL_checknumber(lua, 1);
+    if(color >= PALETTE_SIZE) {
+        lua_pushstring(lua, "Invalid palette index.");
+        lua_error(lua);
+    }
+
+    int r = micro_palette[color][0];
+    int g = micro_palette[color][1];
+    int b = micro_palette[color][2];
+
+    SDL_SetRenderDrawColor(micro->renderer, r, g, b, 255);
     SDL_RenderClear(micro->renderer);
 
     return 0;
