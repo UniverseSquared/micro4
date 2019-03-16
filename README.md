@@ -8,6 +8,17 @@ micro4 is a work-in-progress fantasy console developed by @UniverseSquared.
 * Input: 6 Buttons
 * Language: Lua
 
+## Usage
+
+At the moment, the only way to get micro4 is to compile it, which can be done on linux as such:
+
+```
+$ git clone https://github.com/UniverseSquared/micro4.git
+$ cd micro4
+$ make
+$ # To run: ./micro4 <path to cart>
+```
+
 ## API
 
 These functions can be used in a micro4 cart.
