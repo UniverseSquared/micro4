@@ -15,9 +15,11 @@
 #define FRAME_TIME (1000 / TARGET_FPS)
 
 const static int micro_palette[][3] = {
-    { 255, 0, 0 },
-    { 0, 255, 0 },
-    { 0, 0, 255 }
+    {   0,   0,   0 },
+    { 255,   0,   0 },
+    {   0, 255,   0 },
+    {   0,   0, 255 },
+    { 255, 255, 255 }
 };
 
 #define PALETTE_SIZE (sizeof(micro_palette) / sizeof(micro_palette[0]))
